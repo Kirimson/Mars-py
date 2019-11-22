@@ -22,15 +22,6 @@ class Field:
             field_string += "\n"
         return field_string
 
-    def entity_at(self, location: Location) -> Entity:
-        return self.map[location.row][location.col]
-
-    def crumbs_at(self, location: Location) -> int:
-        return self.crumbs[location.row][location.col]
-
-    def signal_at(self, location: Location) -> int:
-        return self.signal_strength[location.row][location.col]
-
     def free_adjacent_location(self, location):
         locations = self.adjacent_locations(location, 1)
         for location in locations:
@@ -65,16 +56,6 @@ class Field:
         ModelConstants.random.shuffle(locations)
         return locations
 
-    def location_free(self, location):
-        return self.entity_at(location) is None
-
-    def clear_location(self, location):
-        replaced = self.entity_at(location)
-        replaced = None
-
-    def place_entity(self, entity, location):
-        self.map[location.row][location.col] = entity
-
     def neighbor_to(self, location, entity_type):
         adj_locations = self.adjacent_locations(location)
         for adj_location in adj_locations:
@@ -84,3 +65,20 @@ class Field:
                     return True
         return False
 
+    def crumbs_at(self, location: Location) -> int:
+        return self.crumbs[location.row][location.col]
+
+    def signal_at(self, location: Location) -> int:
+        return self.signal_strength[location.row][location.col]
+
+    def entity_at(self, location: Location) -> Entity:
+        return self.map[location.row][location.col]
+
+    def location_free(self, location):
+        return self.entity_at(location) is None
+
+    def clear_location(self, location):
+        self.map[location.row][location.col] = None
+
+    def place_entity(self, entity, location):
+        self.map[location.row][location.col] = entity

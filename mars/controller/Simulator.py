@@ -23,8 +23,11 @@ class Simulator:
             self.field.place_entity(rock, rock_location)
             self.rocks.append(rock)
 
-        # vehicle_chance = ModelConstants.vehicle_chance
-        # obs_chance = ModelConstants.obstacle_chance
+        vehicle_chance = ModelConstants.vehicle_chance
+        obs_chance = ModelConstants.obstacle_chance
+
+        for row in range(self.field.depth):
+
 
     def simulate(self):
         for row in self.field.map:
