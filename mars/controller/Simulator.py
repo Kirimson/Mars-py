@@ -1,5 +1,5 @@
 from mars.model.Constants import ModelConstants
-from mars.model.Entities import Rock, Location, Obstacle, Vehicle
+from mars.model.Entities import Rock, Location, Obstacle, Vehicle, Mothership
 from mars.model.Field import Field
 from mars.model.Generators import RockGenerator
 
@@ -18,6 +18,7 @@ class Simulator:
         self.field = Field()
         # Opulate field with rocks, obstacles and vehicles
         self.populate()
+        self.set_mothership()
 
     def populate(self):
         # Empty old lists
@@ -60,3 +61,14 @@ class Simulator:
             vehicle.act(self.field)
 
         self.field = temp_field
+
+    def set_mothership(self):
+        row = ModelConstants.random.randint(0, self.field.depth - 1)
+        col = ModelConstants.random.randint(0, self.field.width - 1)
+        location = Location(row, col)
+        while self.field.entity_at(location) is not None:
+            row = ModelConstants.random.randint(0, self.field.depth - 1)
+            col = ModelConstants.random.randint(0, self.field.width - 1)
+            location = Location(row, col)
+        mothership = Mothership(location)
+        self.field.place_entity(mothership, location)
