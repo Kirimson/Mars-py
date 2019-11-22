@@ -14,12 +14,12 @@ class View:
         self.field_window.title("Mars Field")
 
         self.step_text = StringVar(value=F"Step: 0")
-        self.step_label = Label(self.field_window, textvariable=self.step_text).grid()
+        self.step_label = Label(self.field_window, textvariable=self.step_text).grid(pady=1)
 
         self.canvas = Canvas(self.field_window,
                              height=self.field.depth * ViewConstants.scale + (self.field.depth - 1),
                              width=self.field.width * ViewConstants.scale + (self.field.width - 1),
-                             bg="#999")
+                             bg=ViewConstants.bg_color)
         self.canvas.grid()
 
         self.config_frame = Frame(master)
@@ -43,9 +43,9 @@ class View:
         row = entity.location.row
         col = entity.location.col
         color = entity.color
-        y = row + (ViewConstants.scale * row)
+        y = row + (ViewConstants.scale * row) + ViewConstants.scale/2
         x = col + (ViewConstants.scale * col)
 
-        y1 = row + (ViewConstants.scale * row) + ViewConstants.scale
+        y1 = row + (ViewConstants.scale * row) + ViewConstants.scale + ViewConstants.scale/2
         x1 = col + (ViewConstants.scale * col) + ViewConstants.scale
         self.canvas.create_rectangle(x, y, x1, y1, outline="", fill=color)

@@ -86,15 +86,18 @@ class GUIMain:
         self.reset_button = Button()
         self.view_button = Button()
 
-        sim_frame = Frame(self.master, highlightbackground="gray", highlightcolor="gray", highlightthickness=1)
+        sim_frame = Frame(self.master, highlightbackground="gray",
+                          highlightcolor="gray", highlightthickness=1)
         sim_frame.grid(row=0, sticky='we', columnspan=4)
         self.setup_simulation_parameters(sim_frame)
 
-        rock_frame = Frame(self.master, highlightbackground="gray", highlightcolor="gray", highlightthickness=1)
+        rock_frame = Frame(self.master, highlightbackground="gray",
+                           highlightcolor="gray", highlightthickness=1)
         rock_frame.grid(row=1, sticky='we', columnspan=2)
         self.setup_rocks(rock_frame)
 
-        other_frame = Frame(self.master, highlightbackground="gray", highlightcolor="gray", highlightthickness=1)
+        other_frame = Frame(self.master, highlightbackground="gray",
+                            highlightcolor="gray", highlightthickness=1)
         other_frame.grid(row=1, column=2, sticky='we', columnspan=2)
         self.setup_other(other_frame)
 
@@ -127,29 +130,42 @@ class GUIMain:
         else:
             return
 
+    def quit(self):
+        if ModelConstants.running:
+            self.stop_simulation()
+            self.master.after(10, self.quit)
+        else:
+            self.master.destroy()
+
     def setup_simulation_parameters(self, frame):
         Label(frame, text="Simulation Parameters").grid(row=0, column=0)
         Label(frame, text="Simulation Length: ").grid(row=1, column=0)
         length_entry = Entry(frame, width=5)
-        length_entry.bind("<KeyRelease>", lambda event: set_length(length_entry.get()))
-        length_entry.insert(constants.END, str(ModelConstants.simulation_length))
+        length_entry.bind("<KeyRelease>",
+                          lambda event: set_length(length_entry.get()))
+        length_entry.insert(constants.END,
+                            str(ModelConstants.simulation_length))
         length_entry.grid(row=1, column=1)
 
         Label(frame, text="Simulation Seed: ").grid(row=2, column=0)
-        seed_entry = Entry(frame, width=5, validate='all', validatecommand=lambda: not ModelConstants.running)
-        seed_entry.bind("<KeyRelease>", lambda event: set_seed(seed_entry.get()))
+        seed_entry = Entry(frame, width=5, validate='all',
+                           validatecommand=lambda: not ModelConstants.running)
+        seed_entry.bind("<KeyRelease>",
+                        lambda event: set_seed(seed_entry.get()))
         seed_entry.insert(constants.END, str(ModelConstants.seed))
         seed_entry.grid(row=2, column=1)
 
         Label(frame, text="Mars Width: ").grid(row=1, column=2)
         width_entry = Entry(frame, width=5)
-        width_entry.bind("<KeyRelease>", lambda event: set_width(width_entry.get()))
+        width_entry.bind("<KeyRelease>",
+                         lambda event: set_width(width_entry.get()))
         width_entry.insert(constants.END, str(ModelConstants.width))
         width_entry.grid(row=1, column=3)
 
         Label(frame, text="Mars Height: ").grid(row=2, column=2)
         height_entry = Entry(frame, width=5)
-        height_entry.bind("<KeyRelease>", lambda event: set_depth(height_entry.get()))
+        height_entry.bind("<KeyRelease>",
+                          lambda event: set_depth(height_entry.get()))
         height_entry.insert(constants.END, str(ModelConstants.depth))
         height_entry.grid(row=2, column=3)
 
@@ -157,13 +173,15 @@ class GUIMain:
         Label(frame, text="Rock Placement").grid(row=0, column=0)
         Label(frame, text="Number of Rocks: ").grid(row=1, column=0)
         rock_num_entry = Entry(frame, width=5)
-        rock_num_entry.bind("<KeyRelease>", lambda event: set_rock_num(rock_num_entry.get()))
+        rock_num_entry.bind("<KeyRelease>",
+                            lambda event: set_rock_num(rock_num_entry.get()))
         rock_num_entry.insert(constants.END, str(ModelConstants.rock_count))
         rock_num_entry.grid(row=1, column=1)
 
         Label(frame, text="Number of Clusters: ").grid(row=2, column=0)
         cluster_entry = Entry(frame, width=5)
-        cluster_entry.bind("<KeyRelease>", lambda event: set_cluster(cluster_entry.get()))
+        cluster_entry.bind("<KeyRelease>",
+                           lambda event: set_cluster(cluster_entry.get()))
         cluster_entry.insert(constants.END, str(ModelConstants.cluster_count))
         cluster_entry.grid(row=2, column=1)
 
@@ -177,32 +195,39 @@ class GUIMain:
         Label(frame, text="Obstacles & Vehicles").grid(row=0, column=0)
         Label(frame, text="Obstacle: ").grid(row=1, column=0)
         obs_entry = Entry(frame, width=5)
-        obs_entry.bind("<KeyRelease>", lambda event: set_obs_chance(obs_entry.get()))
+        obs_entry.bind("<KeyRelease>",
+                       lambda event: set_obs_chance(obs_entry.get()))
         obs_entry.insert(constants.END, str(ModelConstants.obstacle_chance))
         obs_entry.grid(row=1, column=1)
 
         Label(frame, text="Number of Clusters: ").grid(row=2, column=0)
         vehicle_entry = Entry(frame, width=5)
-        vehicle_entry.bind("<KeyRelease>", lambda event: set_vehicle_chance(vehicle_entry.get()))
+        vehicle_entry.bind("<KeyRelease>", lambda event: set_vehicle_chance(
+            vehicle_entry.get()))
         vehicle_entry.insert(constants.END, str(ModelConstants.vehicle_chance))
         vehicle_entry.grid(row=2, column=1)
 
         Label(frame, text="Show Crumb Trails: ").grid(row=3, column=0)
-        crumb_box = Checkbutton(frame, variable=ModelConstants.show_crumbs, fg="black")
+        crumb_box = Checkbutton(frame, variable=ModelConstants.show_crumbs,
+                                fg="black")
         crumb_box.select()
         crumb_box.grid(row=3, column=1)
 
     def setup_buttons(self):
-        self.view_button = Button(self.master, text="Set Up Simulation", command=lambda: self.setup_view())
+        self.view_button = Button(self.master, text="Set Up Simulation",
+                                  command=lambda: self.setup_view())
         self.view_button.grid(row=2, sticky="we", columnspan=2)
-        step_button = Button(self.master, text="Step Once", command=lambda: self.run_simulation(1))
+        step_button = Button(self.master, text="Step Once",
+                             command=lambda: self.run_simulation(1))
         step_button.grid(row=3, sticky="we", columnspan=2)
-        self.reset_button = Button(self.master, text="Reset", state="disabled", command=lambda: self.stop_simulation())
+        self.reset_button = Button(self.master, text="Reset", state="disabled",
+                                   command=lambda: self.stop_simulation())
         self.reset_button.grid(row=2, column=2, sticky="we", columnspan=2)
         run_button = Button(self.master, text="Run",
-                            command=lambda: self.run_simulation(ModelConstants.simulation_length))
+                            command=lambda: self.run_simulation(
+                                ModelConstants.simulation_length))
         run_button.grid(row=3, column=2, sticky="we", columnspan=2)
-        quit_button = Button(self.master, text="Quit", command=self.master.destroy)
+        quit_button = Button(self.master, text="Quit", command=self.quit)
         quit_button.grid(row=4, sticky="we", columnspan=4)
 
 

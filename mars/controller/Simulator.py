@@ -72,3 +72,5 @@ class Simulator:
             location = Location(row, col)
         mothership = Mothership(location)
         self.field.place_entity(mothership, location)
+        mothership.emit_signal(self.field.signal_strength,
+                               self.field.depth, self.field.width)
