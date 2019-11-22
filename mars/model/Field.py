@@ -35,19 +35,19 @@ class Field:
         locations = list()
 
         # Change the offset from -1 to 1, to get all spaces including diagonals
-        for row_offset in range(-w, w+1):
+        for row_offset in range(-w, w + 1):
             next_row = row + row_offset
             for col_offset in range(-w, w + 1):
                 next_col = col + col_offset
                 # If going out of the bounds, wrap around
-                if next_col < 0:
-                    next_col = next_col + self.width
-                if next_col >= self.width:
-                    next_col = next_col - self.width
                 if next_row < 0:
                     next_row = next_row + self.depth
                 if next_row >= self.depth:
                     next_row = next_row - self.depth
+                if next_col < 0:
+                    next_col = next_col + self.width
+                if next_col >= self.width:
+                    next_col = next_col - self.width
 
                 # Dont add the same location as the checking entity, not adjacent
                 adj_location = Location(next_row, next_col)
@@ -75,7 +75,7 @@ class Field:
         return self.map[location.row][location.col]
 
     def location_free(self, location):
-        return self.entity_at(location) is None
+        return self.map[location.row][location.col] is None
 
     def clear_location(self, location):
         self.map[location.row][location.col] = None

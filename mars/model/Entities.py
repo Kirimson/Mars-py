@@ -34,15 +34,15 @@ class Vehicle(Entity):
         self.random_move(f)
 
     def random_move(self, field):
-        new_location = field.free_adjacent_location(self.location)
         field.clear_location(self.location)
+        new_location = field.free_adjacent_location(self.location)
         self.location = new_location
-        field.place_entity(self, new_location)
+        field.place_entity(self, self.location)
 
 
-class Shadow(Entity):
+class Obstacle(Entity):
     def __init__(self, location):
-        super().__init__(location, "Gray")
+        super().__init__(location, "Black")
 
 
 class Rock(Entity):

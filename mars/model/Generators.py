@@ -1,7 +1,4 @@
-import random
 from typing import List
-
-from mars.model import Entities
 from mars.model.Constants import ModelConstants
 from mars.model.Entities import Location
 
@@ -10,6 +7,7 @@ class RockGenerator:
     @staticmethod
     def generate_rocks(cluster_count, rock_count, width, depth, std):
 
+        # Make falsy 2d array the size of the field
         has_rock = [[False for x in range(width)] for y in range(depth)]
 
         locations = [Location for x in range(rock_count)]
