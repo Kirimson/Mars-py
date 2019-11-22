@@ -8,6 +8,8 @@ class Simulator:
         self.field = None
 
     def set_up(self):
+        rnd_model = ModelConstants()
+        rnd_model.set_random()
         self.field = Field()
 
     def simulate(self):

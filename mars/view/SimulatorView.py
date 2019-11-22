@@ -6,12 +6,12 @@ from mars.model.Constants import ViewConstants, ModelConstants
 class View:
     step = 0
 
-    def __init__(self, master, field_model):
+    def __init__(self, master, field_model, simulator):
 
         self.field = field_model
 
         self.field_window = Toplevel(master)
-        self.field_window.protocol("WM_DELETE_WINDOW", self.stop)
+        self.field_window.protocol("WM_DELETE_WINDOW", simulator.stop_simulation)
         self.field_window.title("Mars Field")
 
         self.step_text = StringVar(value=F"Step: {self.step}")
@@ -27,10 +27,6 @@ class View:
         self.config_frame.grid()
 
         self.draw_village()
-
-    def stop(self):
-        ModelConstants.running = False
-        self.field_window.destroy()
 
     def redraw_village(self, current=None):
         self.canvas.delete("all")
