@@ -1,21 +1,35 @@
 import random
+from typing import List
 
 from mars.model import Entities
 from mars.model.Constants import ModelConstants
 from mars.model.Entities import Location
 
 
-class VillageGenerator:
+class RockGenerator:
     @staticmethod
-    def populate_village():
-        depth = ModelConstants.depth
-        width = ModelConstants.width
+    def generate_rocks(cluster_count, rock_count, width, depth, std):
 
-        village_map = [[Entities.Entity for x in range(width)] for y in range(depth)]
-        for row in range(0, depth):
-            for col in range(0, width):
-                village_map[row][col] = None
-        village_map[0][0] = Entities.Rock(Location(0, 0))
-        village_map[0][3] = Entities.Vehicle(Location(0, 3))
-        village_map[1][0] = Entities.Mothership(Location(1, 0))
-        return village_map
+        has_rock = [[False for x in range(width)] for y in range(depth)]
+
+        locations = [Location for x in range(rock_count)]
+        clusters = [Location for x in range(rock_count)]  # type: List[Location]
+
+        for i in range(cluster_count):
+            col = ModelConstants.random.randint(0, width - 1)
+            row = ModelConstants.random.randint(0, depth - 1)
+            clusters[i] = Location(row, col)
+
+        i = 0
+        while i < rock_count:
+            c = ModelConstants.random.randint(0, cluster_count - 1)
+            row = clusters[c].row + int(std * ModelConstants.random.gauss(0.0, 1.0))
+            col = clusters[c].col + int(std * ModelConstants.random.gauss(0.0, 1.0))
+            row = (row + 10 * depth) % depth
+            col = (col + 10 * width) % width
+            if not has_rock[row][col]:
+                locations[i] = Location(row, col)
+                has_rock[row][col] = True
+                i += 1
+
+        return locations

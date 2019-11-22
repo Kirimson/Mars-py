@@ -1,27 +1,35 @@
 from mars.model.Constants import ModelConstants
 from mars.model.Entities import Entity, Location
-from mars.model.Generators import VillageGenerator
 
 
 class Field:
     def __init__(self):
         self.width = ModelConstants.width
         self.depth = ModelConstants.depth
-        self.map = VillageGenerator.populate_village()
+        # Set map up, including crumbs and signal
+        self.crumbs = [[0 for x in range(self.width)] for y in range(self.depth)]
+        self.signal_strength = [[0 for x in range(self.width)] for y in range(self.depth)]
+        self.map = [[None for x in range(self.width)] for y in range(self.depth)]
 
     def to_string(self):
-        vill_string = ""
+        field_string = ""
         for row in self.map:
             for entity in row:
                 if isinstance(entity, Entity):
-                    vill_string += F"{entity.__class__.__name__[0]} "
+                    field_string += F"{entity.__class__.__name__[0]} "
                 else:
-                    vill_string += "B "
-            vill_string += "\n"
-        return vill_string
+                    field_string += "B "
+            field_string += "\n"
+        return field_string
 
     def entity_at(self, location: Location) -> Entity:
         return self.map[location.row][location.col]
+
+    def crumbs_at(self, location: Location) -> int:
+        return self.crumbs[location.row][location.col]
+
+    def signal_at(self, location: Location) -> int:
+        return self.signal_strength[location.row][location.col]
 
     def free_adjacent_location(self, location):
         locations = self.adjacent_locations(location, 1)
@@ -65,8 +73,7 @@ class Field:
         replaced = None
 
     def place_entity(self, entity, location):
-        replaced = self.entity_at(location)
-        replaced = entity
+        self.map[location.row][location.col] = entity
 
     def neighbor_to(self, location, entity_type):
         adj_locations = self.adjacent_locations(location)

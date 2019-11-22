@@ -2,7 +2,7 @@ from random import Random
 
 
 class ViewConstants:
-    scale = 12
+    scale = 5
 
 
 class ModelConstants:

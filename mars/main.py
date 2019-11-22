@@ -121,7 +121,7 @@ class GUIMain:
             i += 1
             self.step += 1
             self.simulator.simulate()
-            self.view.redraw_village()
+            self.view.draw(self.step)
             if i < step_amount:
                 self.master.after(1, self.run_simulation, step_amount, i)
         else:
@@ -158,19 +158,19 @@ class GUIMain:
         Label(frame, text="Number of Rocks: ").grid(row=1, column=0)
         rock_num_entry = Entry(frame, width=5)
         rock_num_entry.bind("<KeyRelease>", lambda event: set_rock_num(rock_num_entry.get()))
-        rock_num_entry.insert(constants.END, str(ModelConstants.simulation_length))
+        rock_num_entry.insert(constants.END, str(ModelConstants.rock_count))
         rock_num_entry.grid(row=1, column=1)
 
         Label(frame, text="Number of Clusters: ").grid(row=2, column=0)
         cluster_entry = Entry(frame, width=5)
         cluster_entry.bind("<KeyRelease>", lambda event: set_cluster(cluster_entry.get()))
-        cluster_entry.insert(constants.END, str(ModelConstants.simulation_length))
+        cluster_entry.insert(constants.END, str(ModelConstants.cluster_count))
         cluster_entry.grid(row=2, column=1)
 
         Label(frame, text="Rock Clusters Std: ").grid(row=3, column=0)
         std_entry = Entry(frame, width=5)
         std_entry.bind("<KeyRelease>", lambda event: set_std(std_entry.get()))
-        std_entry.insert(constants.END, str(ModelConstants.width))
+        std_entry.insert(constants.END, str(ModelConstants.std))
         std_entry.grid(row=3, column=1)
 
     def setup_other(self, frame):
