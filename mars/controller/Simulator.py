@@ -58,7 +58,10 @@ class Simulator:
         collected_rocks = list()
 
         for vehicle in self.vehicles:
-            vehicle.act(self.field)
+            vehicle.act(self.field, collected_rocks)
+
+        for rock in collected_rocks:
+            self.rocks.remove(rock)
 
         self.field = temp_field
 
@@ -74,3 +77,9 @@ class Simulator:
         self.field.place_entity(mothership, location)
         mothership.emit_signal(self.field.signal_strength,
                                self.field.depth, self.field.width)
+
+    def get_stats(self):
+        return {
+            "rocks": len(self.rocks),
+            "vehicles": len(self.vehicles)
+        }

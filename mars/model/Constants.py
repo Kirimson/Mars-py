@@ -2,8 +2,9 @@ from random import Random
 
 
 class ViewConstants:
-    scale = 8
+    scale = 10
     vehicle_color = "Cyan"
+    vehicle_sample_color = "Blue"
     rock_color = "Yellow"
     obstacle_color = "Black"
     mothership_color = "Purple"

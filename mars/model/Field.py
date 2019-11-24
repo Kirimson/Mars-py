@@ -22,6 +22,13 @@ class Field:
             field_string += "\n"
         return field_string
 
+    def all_free_adjacent_locations(self, location):
+        free_locations = list()
+        for adj_location in self.adjacent_locations(location):
+            if self.location_free(adj_location):
+                free_locations.append(adj_location)
+        return free_locations
+
     def free_adjacent_location(self, location):
         locations = self.adjacent_locations(location, 1)
         for location in locations:
@@ -49,10 +56,8 @@ class Field:
                 if next_col >= self.width:
                     next_col = next_col - self.width
 
-                # Dont add the same location as the checking entity, not adjacent
                 adj_location = Location(next_row, next_col)
-                if location != adj_location:
-                    locations.append(adj_location)
+                locations.append(adj_location)
         ModelConstants.random.shuffle(locations)
         return locations
 
@@ -60,18 +65,39 @@ class Field:
         adj_locations = self.adjacent_locations(location)
         for adj_location in adj_locations:
             entity = self.entity_at(adj_location)
-            if entity:
-                if entity.__class__.__name__ == entity_type:
-                    return True
+            if entity and isinstance(entity, entity_type):
+                return True
         return False
+
+    def get_neighbor(self, location, entity_type):
+        adj_locations = self.adjacent_locations(location, 1)
+        for adj_location in adj_locations:
+            entity = self.entity_at(adj_location)
+            if entity and isinstance(entity, entity_type):
+                return adj_location
+        return None
+
+    def place_crumbs(self, location, quantity):
+        if self.crumbs_at(location) < 10 - quantity:
+            self.crumbs[location.row][location.col] += quantity
 
     def crumbs_at(self, location: Location) -> int:
         return self.crumbs[location.row][location.col]
 
+    def crumbs_at_rc(self, row, col) -> int:
+        return self.crumbs[row][col]
+
+    def pick_up_crumb(self, location):
+        if self.crumbs_at(location) > 0:
+            self.crumbs[location.row][location.col] -= 1
+
     def signal_at(self, location: Location) -> int:
         return self.signal_strength[location.row][location.col]
 
-    def entity_at(self, location: Location) -> Entity:
+    def entity_at_rc(self, row, col):
+        return self.map[row][col]
+
+    def entity_at(self, location: Location):
         return self.map[location.row][location.col]
 
     def location_free(self, location):

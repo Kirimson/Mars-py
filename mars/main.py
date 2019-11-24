@@ -85,6 +85,7 @@ class GUIMain:
 
         self.reset_button = Button()
         self.view_button = Button()
+        self.run_button = Button()
 
         sim_frame = Frame(self.master, highlightbackground="gray",
                           highlightcolor="gray", highlightthickness=1)
@@ -109,13 +110,15 @@ class GUIMain:
     def setup_view(self):
         self.simulator.set_up()
         ModelConstants.running = True
-        self.view = View(self.master, self.simulator.field, self)
+        self.view = View(self.master, self.simulator.field, self,
+                         self.simulator.get_stats())
         self.reset_button['state'] = 'normal'
         self.view_button['state'] = 'disabled'
 
     def stop_simulation(self):
         self.view.field_window.destroy()
         ModelConstants.running = False
+        self.step = 0
         self.reset_button['state'] = 'disabled'
         self.view_button['state'] = 'normal'
 
@@ -124,7 +127,7 @@ class GUIMain:
             i += 1
             self.step += 1
             self.simulator.simulate()
-            self.view.draw(self.step)
+            self.view.draw(self.step, self.simulator.get_stats())
             if i < step_amount:
                 self.master.after(1, self.run_simulation, step_amount, i)
         else:
@@ -200,7 +203,7 @@ class GUIMain:
         obs_entry.insert(constants.END, str(ModelConstants.obstacle_chance))
         obs_entry.grid(row=1, column=1)
 
-        Label(frame, text="Number of Clusters: ").grid(row=2, column=0)
+        Label(frame, text="Vehicle: ").grid(row=2, column=0)
         vehicle_entry = Entry(frame, width=5)
         vehicle_entry.bind("<KeyRelease>", lambda event: set_vehicle_chance(
             vehicle_entry.get()))
@@ -223,10 +226,10 @@ class GUIMain:
         self.reset_button = Button(self.master, text="Reset", state="disabled",
                                    command=lambda: self.stop_simulation())
         self.reset_button.grid(row=2, column=2, sticky="we", columnspan=2)
-        run_button = Button(self.master, text="Run",
-                            command=lambda: self.run_simulation(
-                                ModelConstants.simulation_length))
-        run_button.grid(row=3, column=2, sticky="we", columnspan=2)
+        self.run_button = Button(self.master, text="Run",
+                                 command=lambda: self.run_simulation(
+                                     ModelConstants.simulation_length))
+        self.run_button.grid(row=3, column=2, sticky="we", columnspan=2)
         quit_button = Button(self.master, text="Quit", command=self.quit)
         quit_button.grid(row=4, sticky="we", columnspan=4)
 

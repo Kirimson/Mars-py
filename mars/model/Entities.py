@@ -21,30 +21,94 @@ class Entity:
         self.location = location
         self.color = color
 
-    def act(self, f):
-        """
-        Base act method to be overridden
-        """
-        pass
-
 
 class Vehicle(Entity):
     def __init__(self, location):
-        super().__init__(location, "Cyan")
+        super().__init__(location, ViewConstants.vehicle_color)
         self.old_location = location
+        self.carrying_sample = False
 
-    def act(self, f):
-        self.towards_ship(f)
-        # self.random_move(f)
+    def act(self, field, rocks_collected):
+        # self.act_simple(field, rocks_collected)
+        self.act_collaborative(field, rocks_collected)
 
-    def towards_ship(self, field):
+    def act_collaborative(self, field, rocks_collected):
+        if self.sample_at_base(field):
+            self.carrying_sample = False
+            self.color = ViewConstants.vehicle_color
+            return
+
+        if self.carrying_sample:
+            field.place_crumbs(self.location, 2)
+            self.travel_gradient(field)
+            return
+
+        if self.sample_detected(field):
+            self.pick_sample(field, rocks_collected)
+            return
+
+        if self.sense_crumbs(field):
+            field.pick_up_crumb(self.location)
+            self.travel_gradient(field, False)
+            return
+
+        self.random_move(field)
+
+    def act_simple(self, field, rocks_collected):
+        if self.sample_at_base(field):
+            self.carrying_sample = False
+            self.color = ViewConstants.vehicle_color
+            return
+
+        if self.carrying_sample:
+            self.travel_gradient(field)
+            return
+
+        if self.sample_detected(field):
+            self.pick_sample(field, rocks_collected)
+            return
+
+        self.random_move(field)
+
+    def sample_at_base(self, field):
+        return field.neighbor_to(self.location, Mothership)\
+            and self.carrying_sample
+
+    def sample_detected(self, field):
+        return field.neighbor_to(self.location, Rock)
+
+    def pick_sample(self, field, rocks_collected):
+        rock_location = field.get_neighbor(self.location, Rock)
+        rock = field.entity_at(rock_location)
+        self.carrying_sample = True
+        self.color = ViewConstants.vehicle_sample_color
+        rocks_collected.append(rock)
+        field.clear_location(rock_location)
+
+    def travel_gradient(self, field, up_gradient=True):
         best_location = self.location
         best_score = field.signal_at(self.location)
-        for location in field.adjacent_locations(self.location):
-            if field.location_free(location) and field.signal_at(location) > best_score:
-                best_score = field.signal_at(location)
-                best_location = location
+
+        for location in field.all_free_adjacent_locations(self.location):
+            if up_gradient:
+                signal = field.signal_at(location)
+                if signal >= best_score:
+                    best_score = field.signal_at(location)
+                    best_location = location
+            else:
+                signal = field.signal_at(location) - \
+                         field.crumbs_at(location)
+                if signal <= best_score:
+                    best_score = signal
+                    best_location = location
+
         self.move_to(best_location, field)
+
+    def sense_crumbs(self, field):
+        for location in field.all_free_adjacent_locations(self.location):
+            if field.crumbs_at(location) > 0:
+                return True
+        return False
 
     def random_move(self, field):
         new_location = field.free_adjacent_location(self.location)
