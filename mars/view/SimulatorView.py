@@ -3,6 +3,12 @@ from tkinter import Canvas, Frame, Label, StringVar, Toplevel
 from mars.model.Constants import ViewConstants
 
 
+def from_rgb(rgb):
+    """translates an rgb tuple of int to hex
+    """
+    return "#%02x%02x%02x" % rgb
+
+
 class View:
 
     def __init__(self, master, field_model, simulator, stats):
@@ -56,12 +62,7 @@ class View:
             crumb_col = 255
         if crumb_col <= 0:
             crumb_col = 0
-        self.draw_square(row, col, self.from_rgb((255, crumb_col, crumb_col)))
-
-    def from_rgb(self, rgb):
-        """translates an rgb tuple of int to a tkinter friendly color code
-        """
-        return "#%02x%02x%02x" % rgb
+        self.draw_square(row, col, from_rgb((255, crumb_col, crumb_col)))
 
     def draw_entity(self, entity):
         row = entity.location.row

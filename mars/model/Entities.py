@@ -7,7 +7,7 @@ class Location:
         self.col = row
 
     def __eq__(self, other):
-        return self.row == other.row and self.col == self.col
+        return self.row == other.row and self.col == other.col
 
     def __ne__(self, other):
         return not self == other
@@ -86,26 +86,26 @@ class Vehicle(Entity):
 
     def travel_gradient(self, field, up_gradient=True):
         best_location = self.location
-        best_score = field.signal_at(self.location)
+        best_signal = field.signal_at(self.location)
         for adj_location in field.all_free_adjacent_locations(self.location):
             signal = field.signal_at(adj_location)
             if up_gradient:
-                if best_score:
-                    if signal > best_score:
+                if best_signal:
+                    if signal >= best_signal:
                         best_location = adj_location
-                        best_score = signal
+                        best_signal = signal
                 else:
                     best_location = adj_location
-                    best_score = field.signal_at(adj_location)
+                    best_signal = field.signal_at(adj_location)
             else:
                 signal -= field.crumbs_at(adj_location)
-                if best_score:
-                    if signal < best_score:
+                if best_signal:
+                    if signal <= best_signal:
                         best_location = adj_location
-                        best_score = signal
+                        best_signal = signal
                 else:
                     best_location = adj_location
-                    best_score = field.signal_at(adj_location)
+                    best_signal = field.signal_at(adj_location)
 
         if self.location == best_location:
             self.random_move(field)
@@ -139,7 +139,7 @@ class Mothership(Entity):
     def __init__(self, location):
         super().__init__(location, ViewConstants.mothership_color)
 
-    def emit_signal(self, signal_strength, depth, width):
+    def emit_signal(self, field, depth, width):
         for row in range(depth):
             for col in range(width):
                 d1 = abs(row-self.location.row)
@@ -151,6 +151,4 @@ class Mothership(Entity):
                 y = min(d3*d3, d4*d4)
 
                 signal = depth * depth + width * width - (x+y)
-                signal_strength[row][col] = signal
-
-        return signal_strength
+                field.set_signal_rc(row, col, signal)

@@ -16,7 +16,7 @@ class Simulator:
         rnd_model.set_random()
         # Initialise the field, clearing the old on if it exists
         self.field = Field()
-        # Opulate field with rocks, obstacles and vehicles
+        # Populate field with rocks, obstacles and vehicles
         self.populate()
         self.set_mothership()
 
@@ -52,9 +52,8 @@ class Simulator:
                         self.vehicles.append(vehicle)
                         self.field.place_entity(vehicle, location)
 
-    def simulate(self):
+    def simulate(self, step):
         # Python does not copy by reference for stuff like this!
-        temp_field = self.field
         collected_rocks = list()
 
         for vehicle in self.vehicles:
@@ -63,7 +62,8 @@ class Simulator:
         for rock in collected_rocks:
             self.rocks.remove(rock)
 
-        self.field = temp_field
+        if step % (self.field.depth * 2 + self.field.width * 2) == 0:
+            self.field.reduce_crumbs()
 
     def set_mothership(self):
         row = ModelConstants.random.randint(0, self.field.depth - 1)
@@ -75,8 +75,7 @@ class Simulator:
             location = Location(row, col)
         mothership = Mothership(location)
         self.field.place_entity(mothership, location)
-        mothership.emit_signal(self.field.signal_strength,
-                               self.field.depth, self.field.width)
+        mothership.emit_signal(self.field, self.field.depth, self.field.width)
 
     def get_stats(self):
         return {

@@ -77,6 +77,12 @@ class Field:
                 return adj_location
         return None
 
+    def reduce_crumbs(self):
+        for row in range(len(self.crumbs)):
+            for col in range(len(self.crumbs[0])):
+                if self.crumbs[row][col] > 0:
+                    self.crumbs[row][col] -= 1
+
     def place_crumbs(self, location, quantity):
         if self.crumbs_at(location) < 10 - quantity:
             self.crumbs[location.row][location.col] += quantity
@@ -93,6 +99,9 @@ class Field:
 
     def signal_at(self, location: Location) -> int:
         return self.signal_strength[location.row][location.col]
+
+    def set_signal_rc(self, row, col, value):
+        self.signal_strength[row][col] = value
 
     def entity_at_rc(self, row, col):
         return self.map[row][col]

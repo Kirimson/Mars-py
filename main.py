@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from mars.controller.Simulator import Simulator
 from mars.view.SimulatorView import View
 from mars.model.Constants import ModelConstants, ViewConstants
@@ -115,10 +116,15 @@ class GUIMain:
             self.master.title("Mars")
             self.master.mainloop()
         else:
-            self.simulator.set_up()
-            while not self.simulator.is_finished():
-                self.simulator.simulate()
-                print(self.simulator.get_stats()['rocks'])
+            self.run_headless()
+
+    def run_headless(self):
+        self.simulator.set_up()
+        while not self.simulator.is_finished():
+            self.step += 1
+            self.simulator.simulate(self.step)
+        print(F"Simulation finished. Steps taken: {self.step}")
+        return self.step
 
     def setup_view(self):
         self.simulator.set_up()
@@ -138,9 +144,10 @@ class GUIMain:
     def run_simulation(self, step_amount, i=0):
         if ModelConstants.running:
             i += 1
-            self.step += 1
-            self.simulator.simulate()
-            self.view.draw(self.step, self.simulator.get_stats())
+            if not self.simulator.is_finished():
+                self.step += 1
+                self.simulator.simulate(self.step)
+                self.view.draw(self.step, self.simulator.get_stats())
             if i < step_amount:
                 self.master.after(1, self.run_simulation, step_amount, i)
         else:
@@ -271,7 +278,6 @@ def set_args(user_args):
         set_depth(user_args['depth'])
     if user_args.get('rocks'):
         set_rock_num(user_args['rocks'])
-        print('set rocks')
     if user_args.get('clusters'):
         set_cluster(user_args['clusters'])
     if user_args.get('std'):
