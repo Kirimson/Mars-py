@@ -2,13 +2,14 @@ from random import Random
 
 
 class ViewConstants:
-    scale = 10
+    scale = 5
     vehicle_color = "Cyan"
     vehicle_sample_color = "Blue"
     rock_color = "Yellow"
     obstacle_color = "Black"
     mothership_color = "Purple"
     bg_color = "White"
+    quiet = False
 
 
 class ModelConstants:

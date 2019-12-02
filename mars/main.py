@@ -1,7 +1,9 @@
 from mars.controller.Simulator import Simulator
 from mars.view.SimulatorView import View
-from mars.model.Constants import ModelConstants
+from mars.model.Constants import ModelConstants, ViewConstants
 from tkinter import Tk, Button, Entry, Label, constants, Frame, Checkbutton
+import argparse
+import json
 
 
 def int_parse(value):
@@ -74,6 +76,11 @@ def set_vehicle_chance(value):
         ModelConstants.vehicle_chance = value
 
 
+def set_quiet(value):
+    if value:
+        ViewConstants.quiet = value
+
+
 class GUIMain:
     master = Tk()
     view = None
@@ -83,29 +90,35 @@ class GUIMain:
     def __init__(self):
         self.simulator = Simulator()
 
-        self.reset_button = Button()
-        self.view_button = Button()
-        self.run_button = Button()
+        if not ViewConstants.quiet:
+            self.reset_button = Button()
+            self.view_button = Button()
+            self.run_button = Button()
 
-        sim_frame = Frame(self.master, highlightbackground="gray",
-                          highlightcolor="gray", highlightthickness=1)
-        sim_frame.grid(row=0, sticky='we', columnspan=4)
-        self.setup_simulation_parameters(sim_frame)
+            sim_frame = Frame(self.master, highlightbackground="gray",
+                              highlightcolor="gray", highlightthickness=1)
+            sim_frame.grid(row=0, sticky='we', columnspan=4)
+            self.setup_simulation_parameters(sim_frame)
 
-        rock_frame = Frame(self.master, highlightbackground="gray",
-                           highlightcolor="gray", highlightthickness=1)
-        rock_frame.grid(row=1, sticky='we', columnspan=2)
-        self.setup_rocks(rock_frame)
+            rock_frame = Frame(self.master, highlightbackground="gray",
+                               highlightcolor="gray", highlightthickness=1)
+            rock_frame.grid(row=1, sticky='we', columnspan=2)
+            self.setup_rocks(rock_frame)
 
-        other_frame = Frame(self.master, highlightbackground="gray",
-                            highlightcolor="gray", highlightthickness=1)
-        other_frame.grid(row=1, column=2, sticky='we', columnspan=2)
-        self.setup_other(other_frame)
+            other_frame = Frame(self.master, highlightbackground="gray",
+                                highlightcolor="gray", highlightthickness=1)
+            other_frame.grid(row=1, column=2, sticky='we', columnspan=2)
+            self.setup_other(other_frame)
 
-        self.setup_buttons()
+            self.setup_buttons()
 
-        self.master.title("Mars")
-        self.master.mainloop()
+            self.master.title("Mars")
+            self.master.mainloop()
+        else:
+            self.simulator.set_up()
+            while not self.simulator.is_finished():
+                self.simulator.simulate()
+                print(self.simulator.get_stats()['rocks'])
 
     def setup_view(self):
         self.simulator.set_up()
@@ -234,5 +247,55 @@ class GUIMain:
         quit_button.grid(row=4, sticky="we", columnspan=4)
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description='Run Mars Simulation.')
+    parser.add_argument("--quiet", "-q", action="store_true")
+    parser.add_argument("--seed", "-s", type=int)
+    parser.add_argument("--width", "-w", type=int)
+    parser.add_argument("--depth", "-d", type=int)
+    parser.add_argument("--rocks", "-r", type=int)
+    parser.add_argument("--clusters", "-c", type=int)
+    parser.add_argument("--std", type=float)
+    parser.add_argument("--obstacle", "-o", type=float)
+    parser.add_argument("--vehicle", "-v", type=float)
+    parser.add_argument("--file", "-f", type=str, default="config.json")
+    return parser.parse_args()
+
+
+def set_args(user_args):
+    if user_args.get('seed'):
+        set_seed(user_args['seed'])
+    if user_args.get('width'):
+        set_width(user_args['width'])
+    if user_args.get('depth'):
+        set_depth(user_args['depth'])
+    if user_args.get('rocks'):
+        set_rock_num(user_args['rocks'])
+        print('set rocks')
+    if user_args.get('clusters'):
+        set_cluster(user_args['clusters'])
+    if user_args.get('std'):
+        set_std(user_args['std'])
+    if user_args.get('obstacle'):
+        set_obs_chance(user_args['obstacle'])
+    if user_args.get('vehicle'):
+        set_vehicle_chance(user_args['vehicle'])
+    if user_args.get('quiet'):
+        set_quiet(user_args['quiet'])
+
+
+def read_args(user_args):
+    if args.file:
+        try:
+            with open(user_args.file, 'r') as arg_file:
+                arg_json = json.loads(arg_file.read())
+                set_args(arg_json)
+        except FileNotFoundError:
+            print('Config file not found, using default values')
+    set_args(user_args.__dict__)
+
+
 if __name__ == '__main__':
+    args = parse_args()
+    read_args(args)
     gui = GUIMain()

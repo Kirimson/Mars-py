@@ -83,3 +83,13 @@ class Simulator:
             "rocks": len(self.rocks),
             "vehicles": len(self.vehicles)
         }
+
+    def is_finished(self):
+        carrying = False
+        for vehicle in self.vehicles:
+            if vehicle.carrying_sample:
+                carrying = True
+        if len(self.rocks) == 0 and carrying == False:
+            return True
+        else:
+            return False

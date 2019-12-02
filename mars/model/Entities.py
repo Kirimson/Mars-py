@@ -25,7 +25,6 @@ class Entity:
 class Vehicle(Entity):
     def __init__(self, location):
         super().__init__(location, ViewConstants.vehicle_color)
-        self.old_location = location
         self.carrying_sample = False
 
     def act(self, field, rocks_collected):
@@ -88,27 +87,33 @@ class Vehicle(Entity):
     def travel_gradient(self, field, up_gradient=True):
         best_location = self.location
         best_score = field.signal_at(self.location)
-
-        for location in field.all_free_adjacent_locations(self.location):
+        for adj_location in field.all_free_adjacent_locations(self.location):
+            signal = field.signal_at(adj_location)
             if up_gradient:
-                signal = field.signal_at(location)
-                if signal >= best_score:
-                    best_score = field.signal_at(location)
-                    best_location = location
+                if best_score:
+                    if signal > best_score:
+                        best_location = adj_location
+                        best_score = signal
+                else:
+                    best_location = adj_location
+                    best_score = field.signal_at(adj_location)
             else:
-                signal = field.signal_at(location) - \
-                         field.crumbs_at(location)
-                if signal <= best_score:
-                    best_score = signal
-                    best_location = location
+                signal -= field.crumbs_at(adj_location)
+                if best_score:
+                    if signal < best_score:
+                        best_location = adj_location
+                        best_score = signal
+                else:
+                    best_location = adj_location
+                    best_score = field.signal_at(adj_location)
 
-        self.move_to(best_location, field)
+        if self.location == best_location:
+            self.random_move(field)
+        else:
+            self.move_to(best_location, field)
 
     def sense_crumbs(self, field):
-        for location in field.all_free_adjacent_locations(self.location):
-            if field.crumbs_at(location) > 0:
-                return True
-        return False
+        return field.crumbs_at(self.location) > 0
 
     def random_move(self, field):
         new_location = field.free_adjacent_location(self.location)
