@@ -123,7 +123,6 @@ class GUIMain:
         while not self.simulator.is_finished():
             self.step += 1
             self.simulator.simulate(self.step)
-        print(F"Simulation finished. Steps taken: {self.step}")
         return self.step
 
     def setup_view(self):
@@ -231,7 +230,7 @@ class GUIMain:
         vehicle_entry.grid(row=2, column=1)
 
         Label(frame, text="Show Crumb Trails: ").grid(row=3, column=0)
-        crumb_box = Checkbutton(frame, variable=ModelConstants.show_crumbs,
+        crumb_box = Checkbutton(frame, variable=ViewConstants.show_crumbs,
                                 fg="black")
         crumb_box.select()
         crumb_box.grid(row=3, column=1)

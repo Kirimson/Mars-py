@@ -53,7 +53,7 @@ class View:
                     self.draw_entity(entity)
                 else:
                     quantity = self.field.crumbs_at_rc(row, col)
-                    if quantity > 0:
+                    if quantity > 0 and ViewConstants.show_crumbs:
                         self.draw_crumb(row, col, quantity)
 
     def draw_crumb(self, row, col, quantity):

@@ -10,6 +10,7 @@ class ViewConstants:
     mothership_color = "Purple"
     bg_color = "White"
     quiet = False
+    show_crumbs = True
 
 
 class ModelConstants:
@@ -23,7 +24,6 @@ class ModelConstants:
     std = 2.0
     obstacle_chance = 0.002
     vehicle_chance = 0.002
-    show_crumbs = True
     running = False
 
     def set_random(self):
