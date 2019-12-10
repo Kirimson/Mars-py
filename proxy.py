@@ -27,6 +27,7 @@ def execute(cursor, query):
         cursor.execute(query)
     except mysql.connector.Error as err:
         print(err)
+    return cursor
 
 
 def run(config_file):
@@ -36,10 +37,10 @@ def run(config_file):
                                   database='marsdb')
 
     # Create the table for the sim if not made yet
-    table_query = "create table if not exists mars ("
+    table_query = "create table if not exists mars (id int(11) not null auto_increment, "
     for val_key in FIELD_TYPES:
         table_query += F"{val_key} {FIELD_TYPES[val_key]['type']} default {FIELD_TYPES[val_key]['default']}, "
-    table_query += "result int)"
+    table_query += "result int, constraint id primary key (id))"
     cursor = cnx.cursor()
 
     execute(cursor, table_query)
@@ -48,21 +49,41 @@ def run(config_file):
 
     entrypoint.set_args(config)
 
-    sim = entrypoint.GUIMain()
-
-    col_names = ""
-    col_vals = ""
+    # Check if done already
+    select = "select result from mars where "
+    fields = FIELD_TYPES.copy() 
     for val_key in config:
         if val_key != 'quiet':
-            col_names += F"{val_key}, "
-            col_vals += F"{config[val_key]}, "
-    col_names += "result"
-    col_vals += str(sim.step)
-    insert_query = F"INSERT INTO mars ({col_names}) VALUES ({col_vals})"
-    execute(cursor, insert_query)
-    cnx.commit()
+            fields[val_key]['default'] = config[val_key]
+    for i, val_key in enumerate(fields):
+        select += F"{val_key}={fields[val_key]['default']}"
+        if i < len(fields) - 1:
+            select += " and "
+
+    execute(cursor, select)
+
+    result = None
+    for db_result in cursor:
+        result = db_result[0]
+    
+    if not result:
+        sim = entrypoint.GUIMain()
+        result = sim.step
+        col_names = ""
+        col_vals = ""
+        for val_key in config:
+            if val_key != 'quiet':
+                col_names += F"{val_key}, "
+                col_vals += F"{config[val_key]}, "
+        col_names += "result"
+        col_vals += str(result)
+        insert_query = F"INSERT INTO mars ({col_names}) VALUES ({col_vals})"
+        execute(cursor, insert_query)
+        cnx.commit()
 
     cnx.close()
+
+    print(result)
 
 
 if __name__ == '__main__':
