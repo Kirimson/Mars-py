@@ -37,29 +37,31 @@ class Field:
         return None
 
     def adjacent_locations(self, location, w=1):
-        row = location.row
-        col = location.col
-        locations = list()
+        if location:
+            row = location.row
+            col = location.col
+            locations = list()
 
-        # Change the offset from -1 to 1, to get all spaces including diagonals
-        for row_offset in range(-w, w + 1):
-            next_row = row + row_offset
-            for col_offset in range(-w, w + 1):
-                next_col = col + col_offset
-                # If going out of the bounds, wrap around
-                if next_row < 0:
-                    next_row = next_row + self.depth
-                if next_row >= self.depth:
-                    next_row = next_row - self.depth
-                if next_col < 0:
-                    next_col = next_col + self.width
-                if next_col >= self.width:
-                    next_col = next_col - self.width
+            # Change the offset from -1 to 1, to get all spaces including diagonals
+            for row_offset in range(-w, w + 1):
+                next_row = row + row_offset
+                for col_offset in range(-w, w + 1):
+                    next_col = col + col_offset
+                    # If going out of the bounds, wrap around
+                    if next_row < 0:
+                        next_row = next_row + self.depth
+                    if next_row >= self.depth:
+                        next_row = next_row - self.depth
+                    if next_col < 0:
+                        next_col = next_col + self.width
+                    if next_col >= self.width:
+                        next_col = next_col - self.width
 
-                adj_location = Location(next_row, next_col)
-                locations.append(adj_location)
-        ModelConstants.random.shuffle(locations)
-        return locations
+                    adj_location = Location(next_row, next_col)
+                    locations.append(adj_location)
+            ModelConstants.random.shuffle(locations)
+            return locations
+        return None
 
     def neighbor_to(self, location, entity_type):
         adj_locations = self.adjacent_locations(location)

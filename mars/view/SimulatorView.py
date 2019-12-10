@@ -71,9 +71,9 @@ class View:
         self.draw_square(row, col, color)
 
     def draw_square(self, row, col, color):
-        y = row + (ViewConstants.scale * row) + ViewConstants.scale/2
-        x = col + (ViewConstants.scale * col)
+        y = (row + (ViewConstants.scale * row)) + 1
+        x = (col + (ViewConstants.scale * col)) + 1
 
-        y1 = row + (ViewConstants.scale * row) + ViewConstants.scale + ViewConstants.scale/2
-        x1 = col + (ViewConstants.scale * col) + ViewConstants.scale
+        y1 = (row + (ViewConstants.scale * row) + ViewConstants.scale) + 1
+        x1 = (col + (ViewConstants.scale * col) + ViewConstants.scale) + 1
         self.canvas.create_rectangle(x, y, x1, y1, outline="", fill=color)

@@ -1,5 +1,5 @@
 {
   "seed": 133,
-  "vehicle": 0.004,
-  "quiet": true
+  "vehicle": 0.01,
+  "quiet": false
 }
