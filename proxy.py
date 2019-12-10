@@ -30,9 +30,10 @@ def execute(cursor, query):
 
 
 def run(config_file):
-    cnx = mysql.connector.connect(user='test', password='testpass',
+    cnx = mysql.connector.connect(user='mars', password='marspass',
                                   host='127.0.0.1',
-                                  database='python')
+                                  port=3309,
+                                  database='marsdb')
 
     # Create the table for the sim if not made yet
     table_query = "create table if not exists mars ("
